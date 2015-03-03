@@ -10,8 +10,9 @@ var PORT = process.env.GRAPHITE_PORT;
 
 // Error messages
 var ENV_VAR_ERROR_MSG = 'Graphite environment variables were not defined';
-var PARAM_ERROR_MSG = 'Graphite initialization parameters are missing';
-var METRIC_ERROR_MSG = 'Unable to write metric into Graphite because some parameters were missing';
+var PARAM_ERROR_MSG = 'Graphite initialization parameters are missing or malformed';
+var METRIC_ERROR_MSG = 'Unable to upload metric into Graphite because ' +
+                       'some parameters were missing or malformed';
 
 // Constants
 var DEFAULT_SERVER_NAME = 'bbserver';
@@ -20,14 +21,14 @@ var DEFAULT_SERVER_NAME = 'bbserver';
 /**
  *  Initializes Graphite client
  *
- *  @{param} (String) environment First generic metric path hierarchy component
- *  @{param} (String) application Second generic metric path hierarchy component
- *  @{param} (String) serverName Third generic metric path hierarchy component
+ *  @{param} (String) metricEnvironment First generic metric path hierarchy component
+ *  @{param} (String) metricApplication Second generic metric path hierarchy component
+ *  @{param} (String) metricServerName Third generic metric path hierarchy component
  *  @{param} (function) callback A callback function in the form of callback(err)
  */
-function GraphiteClient(environment, application, serverName, callback) {
+function GraphiteClient(metricEnvironment, metricApplication, metricServerName, callback) {
     if (!(this instanceof GraphiteClient)) {
-        return new GraphiteClient(environment, application, serverName, callback);
+        return new GraphiteClient(metricEnvironment, metricApplication, metricServerName, callback);
     }
 
     var self = this;
@@ -36,18 +37,20 @@ function GraphiteClient(environment, application, serverName, callback) {
         return callback(ENV_VAR_ERROR_MSG);
     }
 
-    if (!environment || !application) {
-        return callback(PARAM_ERROR_MSG);
+    if (!metricServerName) {
+        metricServerName = DEFAULT_SERVER_NAME;
     }
 
-    if (!serverName) {
-        serverName = DEFAULT_SERVER_NAME;
+    if (!metricEnvironment || metricEnvironment.indexOf('.') >= 0 ||
+        !metricApplication || metricApplication.indexOf('.') >= 0 ||
+        !metricServerName || metricServerName.indexOf('.') >= 0) {
+        return callback(PARAM_ERROR_MSG);
     }
 
     var clientPath = 'plaintext://' + HOST + ':' + PORT + '/';
 
     self.client = graphite.createClient(clientPath);
-    self.metricPathPrefix = [environment, application, serverName].join('.');
+    self.metricPathPrefix = [metricEnvironment, metricApplication, metricServerName].join('.');
 
     return callback();
 }
@@ -55,24 +58,31 @@ function GraphiteClient(environment, application, serverName, callback) {
 /**
  *  Uploads metric into Graphite
  *
- *  @{param} (String) metricPathPostfix Specific metric path components
+ *  @{param} (String) metricClient Metric client path
+ *  @{param} (String) metricEvent Metric event path
  *  @{param} (String) metricValue Metric value
  *  @{param} (Number) metricTimestamp Unix epoch time metric timestamp in milliseconds
  *  Default: method execution current time
  *  @{param} (function) callback A callback function in the form of callback(err)
  */
-GraphiteClient.prototype.write = function write(metricPathPostfix, metricValue, metricTimestamp, callback) {
-    if (!metricPathPostfix || !metricValue || !callback) {
-        return callback(METRIC_ERROR_MSG);
-    }
-
+GraphiteClient.prototype.write = function write(
+    metricClient, metricEvent, metricValue, metricTimestamp, callback
+) {
     if (!metricTimestamp) {
         metricTimestamp = Date.now();
     }
 
+    if (!metricClient || metricClient.indexOf('.') >= 0 ||
+        !metricEvent || metricEvent.indexOf('.') >= 0 ||
+        typeof metricValue !== 'number' ||
+        typeof metricTimestamp !== 'number' ||
+        !callback) {
+        return callback(METRIC_ERROR_MSG);
+    }
+
     var self = this;
     var metric = {};
-    var path = self.metricPathPrefix + '.' + metricPathPostfix;
+    var path = [self.metricPathPrefix, metricClient, metricEvent].join('.');
 
     metric[path] = metricValue;
 
