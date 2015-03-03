@@ -17,23 +17,25 @@ var DETAIL_METRIC_PATH = 'bb.eventsCounte';
 
 
 describe('index.js', function () {
-    describe('#Graphite(environment, application, serverName, callback)',
-        function () {
-            it('should initialize Graphite properly', function (done) {
-                var graphite = new Graphite(ENV, APPLICATION, SERVER_NAME, function (err) {
-                    expect(err).to.not.exist;
+    describe('#Graphite(environment, application, serverName, callback)', function () {
+        it('should initialize Graphite properly', function (done) {
+            try {
+                var graphite = new Graphite(ENV, APPLICATION, SERVER_NAME);
+            } catch (exp) {
+                expect(exp).to.not.exist;
+            }
 
-                    return done();
-                });
-            });
+            return done();
+        });
 
-            it('should error when trying to initialize Graphite with empty parameters', function (done) {
-                var graphite = new Graphite(null, APPLICATION, SERVER_NAME, function (err) {
-                    expect(err).to.exist;
+        it('should error when trying to initialize Graphite with empty parameters', function (done) {
+            try {
+                var graphite = new Graphite(null, APPLICATION, SERVER_NAME);
+            } catch (exp) {
+                expect(exp).to.exist;
+            }
 
-                    return done();
-                });
-            });
-        }
-    );
+            return done();
+        });
+    });
 });

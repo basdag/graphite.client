@@ -26,15 +26,15 @@ var DEFAULT_SERVER_NAME = 'bbserver';
  *  @{param} (String) metricServerName Third generic metric path hierarchy component
  *  @{param} (function) callback A callback function in the form of callback(err)
  */
-function GraphiteClient(metricEnvironment, metricApplication, metricServerName, callback) {
+function GraphiteClient(metricEnvironment, metricApplication, metricServerName) {
     if (!(this instanceof GraphiteClient)) {
-        return new GraphiteClient(metricEnvironment, metricApplication, metricServerName, callback);
+        return new GraphiteClient(metricEnvironment, metricApplication, metricServerName);
     }
 
     var self = this;
 
     if (!HOST || !PORT) {
-        return callback(ENV_VAR_ERROR_MSG);
+        throw new Error(ENV_VAR_ERROR_MSG);
     }
 
     if (!metricServerName) {
@@ -44,15 +44,13 @@ function GraphiteClient(metricEnvironment, metricApplication, metricServerName, 
     if (!metricEnvironment || metricEnvironment.indexOf('.') >= 0 ||
         !metricApplication || metricApplication.indexOf('.') >= 0 ||
         !metricServerName || metricServerName.indexOf('.') >= 0) {
-        return callback(PARAM_ERROR_MSG);
+        throw new Error(PARAM_ERROR_MSG);
     }
 
     var clientPath = 'plaintext://' + HOST + ':' + PORT + '/';
 
     self.client = graphite.createClient(clientPath);
     self.metricPathPrefix = [metricEnvironment, metricApplication, metricServerName].join('.');
-
-    return callback();
 }
 
 /**
