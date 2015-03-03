@@ -13,6 +13,9 @@ var ENV_VAR_ERROR_MSG = 'Graphite environment variables were not defined';
 var PARAM_ERROR_MSG = 'Graphite initialization parameters are missing';
 var METRIC_ERROR_MSG = 'Unable to write metric into Graphite because some parameters were missing';
 
+// Constants
+var DEFAULT_SERVER_NAME = 'bbserver';
+
 
 /**
  *  Initializes Graphite client
@@ -33,8 +36,12 @@ function GraphiteClient(environment, application, serverName, callback) {
         return callback(ENV_VAR_ERROR_MSG);
     }
 
-    if (!environment || !application || !serverName) {
+    if (!environment || !application) {
         return callback(PARAM_ERROR_MSG);
+    }
+
+    if (!serverName) {
+        serverName = DEFAULT_SERVER_NAME;
     }
 
     var clientPath = 'plaintext://' + HOST + ':' + PORT + '/';
