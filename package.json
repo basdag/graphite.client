@@ -1,0 +1,39 @@
+{
+  "name": "graphite.client",
+  "version": "0.1.0",
+  "description": "Graphite Client to apply more structure in the metrics",
+  "contributors": [
+    {
+      "name": "Bassel Dagher",
+      "email": "bassel@brandingbrand.com"
+    }
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/jshint . && GRAPHITE_HOST=graphite.in.bb.com GRAPHITE_PORT=8080 ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/* -- --hide-console-logs -u exports -R spec"
+  },
+  "precommit": [
+    "test"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brandingbrand/graphite.client"
+  },
+  "bugs": {
+    "url": "https://github.com/brandingbrand/graphite.client/issues"
+  },
+  "dependencies": {
+    "graphite": "0.0.6"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "istanbul": "^0.3.0",
+    "jshint": "^2.5.5",
+    "mocha": "^1.21.4",
+    "precommit-hook": "^1.0.7",
+    "rewire": "^2.3.0"
+  }
+}
