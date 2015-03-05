@@ -9,7 +9,6 @@ var HOST = process.env.GRAPHITE_HOST;
 var PORT = process.env.GRAPHITE_PORT;
 
 // Error messages
-var ENV_VAR_ERROR_MSG = 'Graphite environment variables were not defined';
 var PARAM_ERROR_MSG = 'Graphite initialization parameters are missing or malformed';
 var METRIC_ERROR_MSG = 'Unable to upload metric into Graphite because ' +
                        'some parameters were missing or malformed';
@@ -32,10 +31,6 @@ function GraphiteClient(metricEnvironment, metricApplication, metricServerName) 
     }
 
     var self = this;
-
-    if (!HOST || !PORT) {
-        throw new Error(ENV_VAR_ERROR_MSG);
-    }
 
     if (!metricServerName) {
         metricServerName = DEFAULT_SERVER_NAME;
