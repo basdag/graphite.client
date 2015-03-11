@@ -53,13 +53,25 @@ function GraphiteClient(metricEnvironment, metricApplication, metricServerName) 
  *
  *  @{param} (String) metricClient Metric client path
  *  @{param} (String) metricEvent Metric event path
+ *  @{param} (String) metricYear Metric record year
+ *  @{param} (String) metricMonth Metric record month
+ *  @{param} (String) metricDay Metric record day
+ *  @{param} (String) metricHour Metric record hour
  *  @{param} (String) metricValue Metric value
- *  @{param} (Number) metricTimestamp Unix epoch time metric timestamp in milliseconds
+ *  @{param} (Number) metricTimestamp Server epoch time metric timestamp in milliseconds
  *  Default: method execution current time
  *  @{param} (function) callback A callback function in the form of callback(err)
  */
 GraphiteClient.prototype.write = function write(
-    metricClient, metricEvent, metricValue, metricTimestamp, callback
+    metricClient,
+    metricEvent,
+    metricYear,
+    metricMonth,
+    metricDay,
+    metricHour,
+    metricValue,
+    metricTimestamp,
+    callback
 ) {
     if (!metricTimestamp) {
         metricTimestamp = Date.now();
@@ -74,7 +86,15 @@ GraphiteClient.prototype.write = function write(
 
     var self = this;
     var metric = {};
-    var path = [self.metricPathPrefix, metricClient, metricEvent].join('.');
+    var path = [
+        self.metricPathPrefix,
+        metricClient,
+        metricEvent,
+        metricYear,
+        metricMonth,
+        metricDay,
+        metricHour
+    ].join('.');
 
     metric[path] = metricValue;
 

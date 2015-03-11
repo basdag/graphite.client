@@ -15,6 +15,10 @@ var APPLICATION = 'appName';
 var SERVER = 'serverName';
 var CLIENT = 'clientName';
 var EVENT = 'eventType';
+var YEAR = 2015;
+var MONTH = 3;
+var DAY = 10;
+var HOUR = 17;
 var VALUE = 5;
 
 var SERVER_DEFAULT = 'bbserver';
@@ -102,7 +106,7 @@ describe('index.js', function () {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
 
             GraphiteClientMock.prototype.write = function (metrics, timestamp, cb) {
-                var key = [ENV, APPLICATION, SERVER, CLIENT, EVENT].join('.');
+                var key = [ENV, APPLICATION, SERVER, CLIENT, EVENT, YEAR, MONTH, DAY, HOUR].join('.');
                 var metric = {};
 
                 metric[key] = VALUE;
@@ -128,7 +132,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.write(CLIENT, EVENT, VALUE, Date.now(), function (err) {
+            graphite.write(CLIENT, EVENT, YEAR, MONTH, DAY, HOUR, VALUE, Date.now(), function (err) {
                 expect(err).to.not.exist;
             });
         });
@@ -137,7 +141,7 @@ describe('index.js', function () {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
 
             GraphiteClientMock.prototype.write = function (metrics, timestamp, cb) {
-                var key = [ENV, APPLICATION, SERVER, CLIENT, EVENT].join('.');
+                var key = [ENV, APPLICATION, SERVER, CLIENT, EVENT, YEAR, MONTH, DAY, HOUR].join('.');
                 var metric = {};
 
                 metric[key] = VALUE;
@@ -163,7 +167,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.write(CLIENT, EVENT, VALUE, null, function (err) {
+            graphite.write(CLIENT, EVENT, YEAR, MONTH, DAY, HOUR, VALUE, null, function (err) {
                 expect(err).to.not.exist;
             });
         });
@@ -177,7 +181,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.write(CLIENT_VIOLATION, EVENT, VALUE, Date.now(), function (err) {
+            graphite.write(CLIENT_VIOLATION, EVENT, YEAR, MONTH, DAY, HOUR, VALUE, Date.now(), function (err) {
                 expect(err).to.exist;
 
                 return done();
