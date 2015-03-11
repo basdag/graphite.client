@@ -68,7 +68,6 @@ GraphiteClient.prototype.write = function write(
     if (!metricClient || metricClient.indexOf('.') >= 0 ||
         !metricEvent || metricEvent.indexOf('.') >= 0 ||
         typeof metricValue !== 'number' ||
-        typeof metricTimestamp !== 'number' ||
         !callback) {
         return callback(METRIC_ERROR_MSG);
     }
