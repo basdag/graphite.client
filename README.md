@@ -39,8 +39,14 @@ var Graphite = require('graphite.client');
 
 var graphite = new Graphite(environment, application, serverName);
 
-graphite.write(client, event, value, timestamp, function didUploadMetric(err) {
+graphite.write(client, event, value, function didUploadMetric(err) {
     // If err is null, your data was sent to graphite!
+    // Result Ex.: <production>.<server-name>.<client-name>.<event-name> <value> <timestamp> 
+});
+
+graphite.writeBucket(client, event, timestamp, value, function didUploadMetric(err) {
+    // If err is null, your data was sent to graphite!
+    // Result Ex.: <production>.<server-name>.<client-name>.<event-name>.<year>.<month>.<day>.<hour> <value> <timestamp>
 });
 
 ```
