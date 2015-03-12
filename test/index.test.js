@@ -15,10 +15,11 @@ var APPLICATION = 'appName';
 var SERVER = 'serverName';
 var CLIENT = 'clientName';
 var EVENT = 'eventType';
+var TIMESTAMP = 1426172831551;
 var YEAR = 2015;
-var MONTH = 3;
-var DAY = 10;
-var HOUR = 17;
+var MONTH = 2;
+var DAY = 12;
+var HOUR = 15;
 var VALUE = 5;
 
 var SERVER_DEFAULT = 'bbserver';
@@ -101,7 +102,7 @@ describe('index.js', function () {
         });
     });
 
-    describe('#write(metricClient, metricEvent, metricValue, metricTimestamp, callback)', function () {
+    describe('#writeBucket(metricClient, metricEvent, metricValue, metricTimestamp, callback)', function () {
         it('should upload metric into Graphite properly', function (done) {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
 
@@ -132,16 +133,34 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.write(CLIENT, EVENT, YEAR, MONTH, DAY, HOUR, VALUE, Date.now(), function (err) {
+            graphite.writeBucket(CLIENT, EVENT, TIMESTAMP, VALUE, function (err) {
                 expect(err).to.not.exist;
             });
         });
 
-        it('should upload metric into Graphite with an empty timestamp properly', function (done) {
+        it('should error uploading a invalid metric component into Graphite', function (done) {
+            var graphite;
+
+            try {
+                graphite = new Graphite(ENV, APPLICATION, SERVER);
+            } catch (exp) {
+                expect(exp).to.not.exist;
+            }
+
+            graphite.writeBucket(CLIENT_VIOLATION, EVENT, TIMESTAMP, VALUE, function (err) {
+                expect(err).to.exist;
+
+                return done();
+            });
+        });
+    });
+
+    describe('#write(metricClient, metricEvent, metricValue, metricTimestamp, callback)', function () {
+        it('should upload metric into Graphite properly', function (done) {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
 
             GraphiteClientMock.prototype.write = function (metrics, timestamp, cb) {
-                var key = [ENV, APPLICATION, SERVER, CLIENT, EVENT, YEAR, MONTH, DAY, HOUR].join('.');
+                var key = [ENV, APPLICATION, SERVER, CLIENT, EVENT].join('.');
                 var metric = {};
 
                 metric[key] = VALUE;
@@ -167,7 +186,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.write(CLIENT, EVENT, YEAR, MONTH, DAY, HOUR, VALUE, null, function (err) {
+            graphite.write(CLIENT, EVENT, VALUE, function (err) {
                 expect(err).to.not.exist;
             });
         });
@@ -181,7 +200,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.write(CLIENT_VIOLATION, EVENT, YEAR, MONTH, DAY, HOUR, VALUE, Date.now(), function (err) {
+            graphite.write(CLIENT_VIOLATION, EVENT, VALUE, function (err) {
                 expect(err).to.exist;
 
                 return done();
