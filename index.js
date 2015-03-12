@@ -62,7 +62,7 @@ function GraphiteClient(metricEnvironment, metricApplication, metricServerName) 
  *  Default: method execution current time
  *  @{param} (function) callback A callback function in the form of callback(err)
  */
-GraphiteClient.prototype.write = function write(
+GraphiteClient.prototype.writeBucket = function write(
     metricClient,
     metricEvent,
     metricYear,
@@ -73,14 +73,21 @@ GraphiteClient.prototype.write = function write(
     metricTimestamp,
     callback
 ) {
+    if (!callback) {
+        throw new Error(METRIC_ERROR_MSG);
+    }
+
     if (!metricTimestamp) {
         metricTimestamp = Date.now();
     }
 
     if (!metricClient || metricClient.indexOf('.') >= 0 ||
         !metricEvent || metricEvent.indexOf('.') >= 0 ||
-        typeof metricValue !== 'number' ||
-        !callback) {
+        typeof metricYear !== 'number' ||
+        typeof metricMonth !== 'number' ||
+        typeof metricDay !== 'number' ||
+        typeof metricHour !== 'number' ||
+        typeof metricValue !== 'number') {
         return callback(METRIC_ERROR_MSG);
     }
 
@@ -94,6 +101,50 @@ GraphiteClient.prototype.write = function write(
         metricMonth,
         metricDay,
         metricHour
+    ].join('.');
+
+    metric[path] = metricValue;
+
+    return self.client.write(metric, metricTimestamp, callback);
+};
+
+/**
+ *  Uploads metric into Graphite
+ *
+ *  @{param} (String) metricClient Metric client path
+ *  @{param} (String) metricEvent Metric event path
+ *  @{param} (String) metricValue Metric value
+ *  @{param} (Number) metricTimestamp Server epoch time metric timestamp in milliseconds
+ *  Default: method execution current time
+ *  @{param} (function) callback A callback function in the form of callback(err)
+ */
+GraphiteClient.prototype.write = function write(
+    metricClient,
+    metricEvent,
+    metricValue,
+    metricTimestamp,
+    callback
+) {
+    if (!callback) {
+        throw new Error(METRIC_ERROR_MSG);
+    }
+
+    if (!metricTimestamp) {
+        metricTimestamp = Date.now();
+    }
+
+    if (!metricClient || metricClient.indexOf('.') >= 0 ||
+        !metricEvent || metricEvent.indexOf('.') >= 0 ||
+        typeof metricValue !== 'number') {
+        return callback(METRIC_ERROR_MSG);
+    }
+
+    var self = this;
+    var metric = {};
+    var path = [
+        self.metricPathPrefix,
+        metricClient,
+        metricEvent
     ].join('.');
 
     metric[path] = metricValue;
