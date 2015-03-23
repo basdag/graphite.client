@@ -71,7 +71,12 @@ function GraphiteClient(metricEnvironment, metricApplication, metricServerName) 
     var clientPath = 'plaintext://' + HOST + ':' + PORT + '/';
 
     self.client = graphite.createClient(clientPath);
-    self.metricPathPrefix = [metricEnvironment, metricApplication, metricServerName].join('.');
+    self.metricPathPrefix = [
+        'apps',
+        metricEnvironment,
+        metricApplication,
+        metricServerName
+    ].join('.');
 }
 
 /**
