@@ -40,7 +40,7 @@ describe('index.js', function () {
             }
 
             expect(graphite.client).to.exist;
-            expect(graphite.metricPathPrefix).to.equal([ENV, APPLICATION, SERVER].join('.'));
+            expect(graphite.metricPathPrefix).to.equal(['apps', ENV, APPLICATION, SERVER].join('.'));
 
             return done();
         });
@@ -55,7 +55,7 @@ describe('index.js', function () {
             }
 
             expect(graphite.client).to.exist;
-            expect(graphite.metricPathPrefix).to.equal([ENV, APPLICATION, SERVER_DEFAULT].join('.'));
+            expect(graphite.metricPathPrefix).to.equal(['apps', ENV, APPLICATION, SERVER_DEFAULT].join('.'));
 
             return done();
         });
@@ -107,7 +107,7 @@ describe('index.js', function () {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
 
             GraphiteClientMock.prototype.write = function (metrics, timestamp, cb) {
-                var key = [ENV, APPLICATION, SERVER, CLIENT, EVENT, YEAR, MONTH, DAY, HOUR].join('.');
+                var key = ['apps', ENV, APPLICATION, SERVER, CLIENT, EVENT, YEAR, MONTH, DAY, HOUR].join('.');
                 var metric = {};
 
                 metric[key] = VALUE;
@@ -160,7 +160,7 @@ describe('index.js', function () {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
 
             GraphiteClientMock.prototype.write = function (metrics, timestamp, cb) {
-                var key = [ENV, APPLICATION, SERVER, CLIENT, EVENT].join('.');
+                var key = ['apps', ENV, APPLICATION, SERVER, CLIENT, EVENT].join('.');
                 var metric = {};
 
                 metric[key] = VALUE;
