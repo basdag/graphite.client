@@ -8,7 +8,7 @@ Standardizes and storages metrics into Graphite monitoring tool
 Install
 ---------------
 ```
-npm install git+https://brandingbrand@github.com/brandingbrand/graphite.client.git#v1.1 --save
+npm install git+https://brandingbrand@github.com/brandingbrand/graphite.client.git#v1.1.2 --save
 ```
 
 Format
