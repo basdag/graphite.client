@@ -20,8 +20,8 @@ var DEFAULT_SERVER_NAME = 'bbserver';
 /**
  *  Creates a Graphite path base on a timestamp
  *
- *  @{param} (number|string) timestamp The tiemstamp to be transform into a path
- *  @{return} (String) A partial path to be use it inside the Graphite final path
+ *  @param {number|string} timestamp The tiemstamp to be transform into a path
+ *  @return {string} A partial path to be use it inside the Graphite final path
  */
 function getTimestampPath(timestamp) {
     timestamp = parseInt(timestamp, 10);
@@ -46,10 +46,10 @@ function getTimestampPath(timestamp) {
 /**
  *  Initializes Graphite client
  *
- *  @{param} (String) metricEnvironment First generic metric path hierarchy component
- *  @{param} (String) metricApplication Second generic metric path hierarchy component
- *  @{param} (String) metricServerName Third generic metric path hierarchy component
- *  @{param} (function) callback A callback function in the form of callback(err)
+ *  @param {string} metricEnvironment - First generic metric path hierarchy component
+ *  @param {string} metricApplication - Second generic metric path hierarchy component
+ *  @param {string} metricServerName - Third generic metric path hierarchy component
+ *  @param {function} callback - A callback function in the form of callback(err)
  */
 function GraphiteClient(metricEnvironment, metricApplication, metricServerName) {
     if (!(this instanceof GraphiteClient)) {
@@ -80,19 +80,21 @@ function GraphiteClient(metricEnvironment, metricApplication, metricServerName) 
 }
 
 /**
- *  Uploads metric into Graphite
+ *  Uploads metric by buckets into Graphite
  *
- *  @{param} (String) metricClient Metric client path
- *  @{param} (String) metricEvent Metric event path
- *  @{param} (String) metricTimestamp Record epoch time metric timestamp in milliseconds
- *  @{param} (String) metricValue Metric value
- *  @{param} (function) callback A callback function in the form of callback(err)
+ *  @param {string} metricSource - Metric source
+ *  @param {string} metricType - Metric event
+ *  @param {string} metricClient - Metric client
+ *  @param {string} metricValue - Metric value
+ *  @param {string} metricTimestamp - Record epoch time metric timestamp in milliseconds
+ *  @param {function} callback - A callback function in the form of callback(err)
  */
 GraphiteClient.prototype.writeBucket = function write(
+    metricSource,
+    metricType,
     metricClient,
-    metricEvent,
-    metricTimestamp,
     metricValue,
+    metricTimestamp,
     callback
 ) {
     var self = this;
@@ -102,7 +104,7 @@ GraphiteClient.prototype.writeBucket = function write(
     }
 
     if (!metricClient || metricClient.indexOf('.') >= 0 ||
-        !metricEvent || metricEvent.indexOf('.') >= 0 ||
+        !metricType || metricType.indexOf('.') >= 0 ||
         typeof metricTimestamp !== 'number' ||
         typeof metricValue !== 'number') {
         return callback(METRIC_ERROR_MSG);
@@ -118,8 +120,9 @@ GraphiteClient.prototype.writeBucket = function write(
 
     var path = [
         self.metricPathPrefix,
+        metricSource,
+        metricType,
         metricClient,
-        metricEvent,
         timestampPath
     ].join('.');
 
@@ -131,14 +134,16 @@ GraphiteClient.prototype.writeBucket = function write(
 /**
  *  Uploads metric into Graphite
  *
- *  @{param} (String) metricClient Metric client path
- *  @{param} (String) metricEvent Metric event path
- *  @{param} (String) metricValue Metric value
- *  @{param} (function) callback A callback function in the form of callback(err)
+ *  @param {string} metricSource - Metric source
+ *  @param {string} metricType - Metric event
+ *  @param {string} metricClient - Metric client
+ *  @param {string} metricValue - Metric value
+ *  @param {function} callback - A callback function in the form of callback(err)
  */
 GraphiteClient.prototype.write = function write(
+    metricSource,
+    metricType,
     metricClient,
-    metricEvent,
     metricValue,
     callback
 ) {
@@ -149,7 +154,7 @@ GraphiteClient.prototype.write = function write(
     }
 
     if (!metricClient || metricClient.indexOf('.') >= 0 ||
-        !metricEvent || metricEvent.indexOf('.') >= 0 ||
+        !metricType || metricType.indexOf('.') >= 0 ||
         typeof metricValue !== 'number') {
         return callback(METRIC_ERROR_MSG);
     }
@@ -158,8 +163,9 @@ GraphiteClient.prototype.write = function write(
 
     var path = [
         self.metricPathPrefix,
-        metricClient,
-        metricEvent
+        metricSource,
+        metricType,
+        metricClient
     ].join('.');
 
     metric[path] = metricValue;

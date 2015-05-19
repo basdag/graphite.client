@@ -14,7 +14,8 @@ var ENV = 'stage';
 var APPLICATION = 'appName';
 var SERVER = 'serverName';
 var CLIENT = 'clientName';
-var EVENT = 'eventType';
+var TYPE = 'eventType';
+var SOURCE = 'bbx';
 var TIMESTAMP = 1426172831551;
 var YEAR = 2015;
 var MONTH = 2;
@@ -107,7 +108,7 @@ describe('index.js', function () {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
 
             GraphiteClientMock.prototype.write = function (metrics, timestamp, cb) {
-                var key = ['apps', ENV, APPLICATION, SERVER, CLIENT, EVENT, YEAR, MONTH, DAY, HOUR].join('.');
+                var key = ['apps', ENV, APPLICATION, SERVER, SOURCE, TYPE, CLIENT, YEAR, MONTH, DAY, HOUR].join('.');
                 var metric = {};
 
                 metric[key] = VALUE;
@@ -133,7 +134,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.writeBucket(CLIENT, EVENT, TIMESTAMP, VALUE, function (err) {
+            graphite.writeBucket(SOURCE, TYPE, CLIENT, VALUE, TIMESTAMP, function (err) {
                 expect(err).to.not.exist;
             });
         });
@@ -147,7 +148,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.writeBucket(CLIENT_VIOLATION, EVENT, TIMESTAMP, VALUE, function (err) {
+            graphite.writeBucket(SOURCE, TYPE, CLIENT_VIOLATION, VALUE, TIMESTAMP, function (err) {
                 expect(err).to.exist;
 
                 return done();
@@ -160,7 +161,7 @@ describe('index.js', function () {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
 
             GraphiteClientMock.prototype.write = function (metrics, timestamp, cb) {
-                var key = ['apps', ENV, APPLICATION, SERVER, CLIENT, EVENT].join('.');
+                var key = ['apps', ENV, APPLICATION, SERVER, SOURCE, TYPE, CLIENT].join('.');
                 var metric = {};
 
                 metric[key] = VALUE;
@@ -186,7 +187,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.write(CLIENT, EVENT, VALUE, function (err) {
+            graphite.write(SOURCE, TYPE, CLIENT, VALUE, function (err) {
                 expect(err).to.not.exist;
             });
         });
@@ -200,7 +201,7 @@ describe('index.js', function () {
                 expect(exp).to.not.exist;
             }
 
-            graphite.write(CLIENT_VIOLATION, EVENT, VALUE, function (err) {
+            graphite.write(SOURCE, TYPE, CLIENT_VIOLATION, VALUE, function (err) {
                 expect(err).to.exist;
 
                 return done();
