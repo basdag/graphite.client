@@ -103,59 +103,6 @@ describe('index.js', function () {
         });
     });
 
-    describe('#writeBucket(metricClient, metricEvent, metricValue, metricTimestamp, callback)', function () {
-        it('should upload metric into Graphite properly', function (done) {
-            var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
-
-            GraphiteClientMock.prototype.write = function (metrics, timestamp, cb) {
-                var key = ['apps', ENV, APPLICATION, SERVER, SOURCE, TYPE, CLIENT, YEAR, MONTH, DAY, HOUR].join('.');
-                var metric = {};
-
-                metric[key] = VALUE;
-
-                expect(metrics).to.eql(metric);
-                expect(timestamp).to.exist;
-                expect(typeof timestamp).to.equal('number');
-                expect(cb).to.exist;
-
-                // Reverts Rewire changes
-                graphiteMock();
-
-                return done();
-            };
-
-            var graphite;
-
-            var graphiteMock = Graphite.__set__('graphite', GraphiteClientMock);
-
-            try {
-                graphite = new Graphite(ENV, APPLICATION, SERVER);
-            } catch (exp) {
-                expect(exp).to.not.exist;
-            }
-
-            graphite.writeBucket(SOURCE, TYPE, CLIENT, VALUE, TIMESTAMP, function (err) {
-                expect(err).to.not.exist;
-            });
-        });
-
-        it('should error uploading a invalid metric component into Graphite', function (done) {
-            var graphite;
-
-            try {
-                graphite = new Graphite(ENV, APPLICATION, SERVER);
-            } catch (exp) {
-                expect(exp).to.not.exist;
-            }
-
-            graphite.writeBucket(SOURCE, TYPE, CLIENT_VIOLATION, VALUE, TIMESTAMP, function (err) {
-                expect(err).to.exist;
-
-                return done();
-            });
-        });
-    });
-
     describe('#write(metricClient, metricEvent, metricValue, metricTimestamp, callback)', function () {
         it('should upload metric into Graphite properly', function (done) {
             var GraphiteClientMock = GraphiteClient.__get__('GraphiteClient');
